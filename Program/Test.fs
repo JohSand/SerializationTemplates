@@ -1,5 +1,5 @@
 module Repro
-open TypeClassTests.TestJson
+open TypeClassTests.TextJson
 type Type1 = {
     asd1: int
     asd2: bool

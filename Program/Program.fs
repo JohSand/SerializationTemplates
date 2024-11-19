@@ -2,6 +2,6 @@
 open System.IO
 open Repro
 
-let WriteThings() =
+let WriteThings() = ()
 
 WriteThings() 

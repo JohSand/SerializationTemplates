@@ -1,4 +1,4 @@
-﻿namespace TypeClassTests.TestJson
+﻿namespace TypeClassTests.TextJson
 
 open System.Runtime.InteropServices
 

@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Compile Include="SpanJsonDeserializer.fs" />
-    <Compile Include="DeserializeInterfaceSpanJson.fs" />
+    <Compile Include="TextJsonDeserializer.fs" />
     <Compile Include="DeserializeInterfaceTemplate.fs" />
     <Compile Include="DeserializeSrtpTemplate.fs" />
     <Compile Include="Test.fs" />

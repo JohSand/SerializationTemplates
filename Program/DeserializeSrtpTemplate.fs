@@ -1,4 +1,4 @@
-﻿namespace TypeClassTests
+﻿namespace TypeClassTests.Srtp
 
 open System.Runtime.InteropServices
 
