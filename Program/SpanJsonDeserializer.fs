@@ -5,32 +5,22 @@ open System
 open System.Runtime.CompilerServices
 open Microsoft.FSharp.NativeInterop
 
+type Test = { test: int }
+
+type Test2 = { test: Test }
+
 #nowarn "3535"
 
 type DeserializableTo<'a> =
     static abstract member Deserialize: byref<JsonReader<byte>> -> 'a
 
 module Core =
-    let deserializeCore<'a, 'result when 'a :> DeserializableTo<'result>> (_: 'a) (bytes: byte array) : 'result =
-        let span = ReadOnlySpan(bytes)
-        let mutable (reader: JsonReader<byte>) = JsonReader<byte>(&span)
-        'a.Deserialize(&reader)
-
-    let deserializeProp<'a, 'result when 'a :> DeserializableTo<'result>>
-        (_: 'a)
-        (r: byref<JsonReader<byte>>)
-        : 'result =
+    let resolve<'a, 'result when 'a :> DeserializableTo<'result>> (_: 'a) (r: byref<JsonReader<byte>>) : 'result =
         'a.Deserialize(&r)
 
-
-type Test = { test: int }
-
-type Test2 = { test: Test }
-
-module Instance =
-    ()
 type A =
     | Witness
+
     static member Self = Witness
 
     interface DeserializableTo<bool> with
@@ -54,7 +44,7 @@ type A =
                 let prop = r.ReadEscapedNameSpan()
 
                 if prop.SequenceEqual testName then
-                    test <- Core.deserializeProp A.Self (&r)
+                    test <- Core.resolve A.Self (&r)
                     readProps <- readProps + 1
                 else
                     r.ReadUtf8Dynamic() |> ignore
@@ -68,12 +58,13 @@ type A =
             let mutable readProps = 0
 
             r.ReadBeginObjectOrThrow()
+
             while not (r.ReadUtf8IsEndObject()) do
 
                 let prop = r.ReadEscapedNameSpan()
 
                 if prop.SequenceEqual testName then
-                    test <- Core.deserializeProp A.Self (&r)
+                    test <- Core.resolve A.Self (&r)
                     readProps <- readProps + 1
 
                 else
@@ -83,14 +74,13 @@ type A =
             { Test2.test = test }
 
 
-
-
-module Test =
-
-    let inline deserialize (bytes: byte array) =
-        Core.deserializeCore Witness bytes
-
-    let z () : Test2 =
-        let json = """ { "test": {"test": 1 } } """
+module Demo =
+    let deserialize<'a, 'result when 'a :> DeserializableTo<'result>> (_: 'a) (json: string) : 'result =
         let bytes = Text.UTF8Encoding.UTF8.GetBytes(json)
-        Core.deserializeCore A.Self bytes
+        let span = ReadOnlySpan(bytes)
+        let mutable (reader: JsonReader<byte>) = JsonReader<byte>(&span)
+        'a.Deserialize(&reader)
+
+
+    let proof () : Test =
+        deserialize A.Self """ { "test": {"test": 1 } } """

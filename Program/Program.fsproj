@@ -10,14 +10,11 @@
     <Compile Include="TextJsonDeserializer.fs" />
     <Compile Include="DeserializeInterfaceTemplate.fs" />
     <Compile Include="DeserializeSrtpTemplate.fs" />
-    <Compile Include="Test.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
 	
   <ItemGroup>
-    <PackageReference Include="Fli" Version="1.111.10" />
-    <PackageReference Include="FSharp.Data" Version="6.4.0" />
     <PackageReference Include="SpanJson" Version="4.2.1" />
   </ItemGroup>
 

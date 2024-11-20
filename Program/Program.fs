@@ -1,7 +1,7 @@
-﻿open TypeClassTests
-open System.IO
-open Repro
+﻿
+open TypeClassTests.SpanJson
 
-let WriteThings() = ()
+let WriteThings() =
+   Demo.proof() |> ignore  
 
 WriteThings() 
