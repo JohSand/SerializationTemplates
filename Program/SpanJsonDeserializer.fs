@@ -12,9 +12,11 @@ type Test2 = { test: Test }
 #nowarn "3535"
 
 type DeserializableTo<'a> =
+    //No srtp, as JsonReader is a ref struct. 
     static abstract member Deserialize: byref<JsonReader<byte>> -> 'a
 
 module Core =
+    //No srtp, as JsonReader is a ref struct. 
     let resolve<'a, 'result when 'a :> DeserializableTo<'result>> (_: 'a) (r: byref<JsonReader<byte>>) : 'result =
         'a.Deserialize(&r)
 
