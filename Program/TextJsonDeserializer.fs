@@ -3,6 +3,7 @@
 #nowarn "3535"
 
 open System.Text.Json
+open FSharp.Core.CompilerServices
 
 type JsonReader(s: JsonElement) =
     let mutable s = s
@@ -42,17 +43,13 @@ type JsonReader with
 
     //list
     static member Deserialize(_: #Deserializable<'a> list, r: JsonReader<'x>, _: JsonSource) =
-        let size = r.Current.GetArrayLength()
-        let rar = ResizeArray<_>(size)
+        let mutable rar = ListCollector()
         let mutable x = r.Current.EnumerateArray()
 
         while x.MoveNext() do
-            let curr = x.Current
-            let childReader = (JsonReader<'x>(curr))
-            let result = 'a.Deserialize childReader
-            rar.Add(result)
+            rar.Add('a.Deserialize(JsonReader<'x>(x.Current)))
 
-        List.ofArray (rar.ToArray())
+        rar.Close()
 
     //option
     static member Deserialize(_: #Deserializable<'a> option, r: JsonReader<'x>, _: JsonSource) =
@@ -79,17 +76,13 @@ type JsonReader with
             Some('b.Deserialize r)
 
     static member Deserialize<'a, 'b, 'x when 'b :> SourceReader<'a>>(_: 'a list, r: JsonReader<'x>, _: 'b) =
-        let size = r.Current.GetArrayLength()
-        let rar = ResizeArray<_>(size)
+        let mutable rar = ListCollector()
         let mutable x = r.Current.EnumerateArray()
 
         while x.MoveNext() do
-            let curr = x.Current
-            let childReader = (JsonReader<'x>(curr))
-            let result = 'b.Deserialize childReader
-            rar.Add(result)
+            rar.Add('b.Deserialize(JsonReader<'x>(x.Current)))
 
-        List.ofArray (rar.ToArray())
+        rar.Close()
 
 
     //extended implementations
@@ -97,17 +90,13 @@ type JsonReader with
         'b.Deserialize r
 
     static member Deserialize<'a, 'b when 'b :> SourceReader<'a>>(_: 'a list, r: JsonReader<'b>, _: obj) =
-        let size = r.Current.GetArrayLength()
-        let rar = ResizeArray<_>(size)
+        let mutable rar = ListCollector()
         let mutable x = r.Current.EnumerateArray()
 
         while x.MoveNext() do
-            let curr = x.Current
-            let childReader = (JsonReader<'b>(curr))
-            let result = 'b.Deserialize childReader
-            rar.Add(result)
+            rar.Add('b.Deserialize(JsonReader<'b>(x.Current)))
 
-        List.ofArray (rar.ToArray())
+        rar.Close()
 
     static member Deserialize<'a, 'b when 'b :> SourceReader<'a>>(_: 'a option, r: JsonReader<'b>, _: obj) =
         if

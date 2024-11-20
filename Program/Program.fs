@@ -1,5 +1,5 @@
 ﻿
-open TypeClassTests.SpanJson
+open TypeClassTests.TextJson
 
 let WriteThings() =
    Demo.proof() |> ignore  
